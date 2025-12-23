@@ -22,7 +22,7 @@ export enum RoomStatus {
 @Entity('rooms')
 @Index(['chainRoomId'], { unique: true })
 @Index(['status'])
-@Index(['createdAt'])
+@Index(['indexedAt'])
 export class RoomEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
