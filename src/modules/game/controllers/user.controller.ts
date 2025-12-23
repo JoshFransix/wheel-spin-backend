@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Query, UseInterceptors, CacheInterceptor } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { UserService } from '../services/user.service';
 
 @Controller('users')

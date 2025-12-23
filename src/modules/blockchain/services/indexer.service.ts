@@ -53,7 +53,7 @@ export class IndexerService implements OnModuleInit {
   private async initialize() {
     // Load last processed block from database
     const lastBlock = await this.getLastProcessedBlock();
-    const deploymentBlock = this.configService.get<number>('blockchain.contractDeploymentBlock');
+    const deploymentBlock = this.configService.get<number>('blockchain.contractDeploymentBlock') || 0;
     
     this.lastProcessedBlock = lastBlock || deploymentBlock;
     this.logger.log(`Starting from block ${this.lastProcessedBlock}`);
@@ -87,7 +87,7 @@ export class IndexerService implements OnModuleInit {
 
     try {
       const currentBlock = await this.contractService.getCurrentBlock();
-      const confirmBlocks = this.configService.get<number>('indexer.confirmBlocks');
+      const confirmBlocks = this.configService.get<number>('indexer.confirmBlocks') || 3;
       const safeBlock = currentBlock - confirmBlocks;
 
       if (this.lastProcessedBlock >= safeBlock) {
@@ -95,7 +95,7 @@ export class IndexerService implements OnModuleInit {
         return;
       }
 
-      const batchSize = this.configService.get<number>('indexer.blockBatchSize');
+      const batchSize = this.configService.get<number>('indexer.blockBatchSize') || 1000;
       const toBlock = Math.min(this.lastProcessedBlock + batchSize, safeBlock);
 
       this.logger.log(`Indexing blocks ${this.lastProcessedBlock} to ${toBlock}`);

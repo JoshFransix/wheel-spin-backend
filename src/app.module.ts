@@ -28,15 +28,15 @@ import { HealthController } from './health.controller';
     // Caching
     CacheModule.register({
       isGlobal: true,
-      ttl: parseInt(process.env.API_CACHE_TTL, 10) * 1000 || 30000,
+      ttl: parseInt(process.env.API_CACHE_TTL || '30', 10) * 1000,
       max: 100,
     }),
 
     // Rate Limiting
     ThrottlerModule.forRoot([
       {
-        ttl: parseInt(process.env.API_RATE_LIMIT_TTL, 10) * 1000 || 60000,
-        limit: parseInt(process.env.API_RATE_LIMIT_LIMIT, 10) || 100,
+        ttl: parseInt(process.env.API_RATE_LIMIT_TTL || '60', 10) * 1000,
+        limit: parseInt(process.env.API_RATE_LIMIT_LIMIT || '100', 10),
       },
     ]),
 

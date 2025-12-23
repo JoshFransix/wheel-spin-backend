@@ -52,7 +52,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!this.connectedClients.has(roomId)) {
       this.connectedClients.set(roomId, new Set());
     }
-    this.connectedClients.get(roomId).add(client.id);
+    this.connectedClients.get(roomId)!.add(client.id);
 
     this.logger.log(`Client ${client.id} subscribed to room ${roomId}`);
     return { success: true, roomId };

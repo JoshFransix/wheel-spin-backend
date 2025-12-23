@@ -8,7 +8,7 @@ export class ContractService implements OnModuleInit {
   private readonly logger = new Logger(ContractService.name);
   private contract: Contract;
   private provider: Provider;
-  private wsProvider: WebSocketProvider;
+  private wsProvider: WebSocketProvider | null;
   private reconnectAttempts = 0;
   private readonly maxReconnectAttempts = 5;
 
@@ -69,6 +69,10 @@ export class ContractService implements OnModuleInit {
     setTimeout(async () => {
       try {
         const wsUrl = this.configService.get<string>('blockchain.rpcWebsocketUrl');
+        if (!wsUrl) {
+          this.logger.error('WebSocket URL not configured for reconnection');
+          return;
+        }
         this.wsProvider = new WebSocketProvider(wsUrl);
         this.setupWebSocketReconnection();
         this.logger.log('WebSocket reconnected successfully');

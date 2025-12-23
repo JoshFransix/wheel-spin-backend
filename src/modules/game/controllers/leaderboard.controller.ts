@@ -1,4 +1,5 @@
-import { Controller, Get, Query, UseInterceptors, CacheInterceptor } from '@nestjs/common';
+import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { LeaderboardService } from '../services/leaderboard.service';
 
 @Controller('leaderboard')
