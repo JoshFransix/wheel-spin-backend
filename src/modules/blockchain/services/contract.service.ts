@@ -44,15 +44,23 @@ export class ContractService implements OnModuleInit {
   }
 
   private setupWebSocketReconnection() {
-    this.wsProvider.on('error', (error) => {
-      this.logger.error(`WebSocket error: ${error.message}`);
-      this.handleWebSocketReconnect();
-    });
+    if (!this.wsProvider) {
+      return;
+    }
 
-    this.wsProvider.on('close', () => {
-      this.logger.warn('WebSocket connection closed');
-      this.handleWebSocketReconnect();
-    });
+    // Use WebSocket native events through the websocket property
+    const ws = (this.wsProvider as any).websocket;
+    if (ws) {
+      ws.on('error', (error: Error) => {
+        this.logger.error(`WebSocket error: ${error.message}`);
+        this.handleWebSocketReconnect();
+      });
+
+      ws.on('close', () => {
+        this.logger.warn('WebSocket connection closed');
+        this.handleWebSocketReconnect();
+      });
+    }
   }
 
   private async handleWebSocketReconnect() {

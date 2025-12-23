@@ -63,10 +63,19 @@ export class IndexerService implements OnModuleInit {
   }
 
   private async getLastProcessedBlock(): Promise<number | null> {
-    const state = await this.indexerStateRepository.findOne({
-      where: { key: 'last_indexed_block' },
-    });
-    return state ? parseInt(state.value, 10) : null;
+    try {
+      const state = await this.indexerStateRepository.findOne({
+        where: { key: 'last_indexed_block' },
+      });
+      return state ? parseInt(state.value, 10) : null;
+    } catch (error) {
+      // If table doesn't exist yet (first run before migrations), return null
+      if (error.code === '42P01') {
+        this.logger.warn('indexer_state table does not exist yet. Run migrations first.');
+        return null;
+      }
+      throw error;
+    }
   }
 
   private async setLastProcessedBlock(blockNumber: number) {

@@ -1,6 +1,14 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
 import { join } from 'path';
+import {
+  UserEntity,
+  RoomEntity,
+  PlayerEntity,
+  BetEntity,
+  TransactionEntity,
+  IndexerStateEntity,
+} from '../database/entities';
 
 config();
 
@@ -11,7 +19,14 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.DB_USERNAME || 'spinwheel',
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE || 'spinwheel_db',
-  entities: [join(__dirname, '../database/entities/**/*.entity{.ts,.js}')],
+  entities: [
+    UserEntity,
+    RoomEntity,
+    PlayerEntity,
+    BetEntity,
+    TransactionEntity,
+    IndexerStateEntity,
+  ],
   migrations: [join(__dirname, '../database/migrations/**/*{.ts,.js}')],
   synchronize: false,
   logging: process.env.DB_LOGGING === 'true',
