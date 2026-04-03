@@ -30,7 +30,6 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
     
-    // Clean up room subscriptions
     for (const [roomId, clients] of this.connectedClients.entries()) {
       clients.delete(client.id);
       if (clients.size === 0) {
@@ -94,10 +93,6 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { success: true };
   }
 
-  // ============================================
-  // Server-side event emissions
-  // ============================================
-
   emitRoomCreated(room: RoomEntity) {
     this.server.to('lobby').emit('room:created', {
       roomId: room.chainRoomId,
@@ -123,10 +118,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
       },
     };
 
-    // Emit to specific room subscribers
     this.server.to(`room:${roomId}`).emit('room:player-joined', event);
-    
-    // Emit to lobby for room list updates
     this.server.to('lobby').emit('room:updated', { roomId });
 
     this.logger.log(`Emitted player:joined for room ${roomId}`);
@@ -168,7 +160,6 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
-  // Broadcast to all connected clients
   broadcastSystemMessage(message: string, data?: any) {
     this.server.emit('system:message', {
       message,

@@ -51,14 +51,12 @@ export class IndexerService implements OnModuleInit {
   }
 
   private async initialize() {
-    // Load last processed block from database
     const lastBlock = await this.getLastProcessedBlock();
     const deploymentBlock = this.configService.get<number>('blockchain.contractDeploymentBlock') || 0;
     
     this.lastProcessedBlock = lastBlock || deploymentBlock;
     this.logger.log(`Starting from block ${this.lastProcessedBlock}`);
 
-    // Start listening to real-time events
     this.setupEventListeners();
   }
 
@@ -69,7 +67,6 @@ export class IndexerService implements OnModuleInit {
       });
       return state ? parseInt(state.value, 10) : null;
     } catch (error) {
-      // If table doesn't exist yet (first run before migrations), return null
       if (error.code === '42P01') {
         this.logger.warn('indexer_state table does not exist yet. Run migrations first.');
         return null;
@@ -123,7 +120,6 @@ export class IndexerService implements OnModuleInit {
   private async processBlocks(fromBlock: number, toBlock: number) {
     const contract = this.contractService.getContract();
 
-    // Fetch all relevant events in this block range
     const events = {
       RoomCreated: await contract.queryFilter('RoomCreated', fromBlock, toBlock),
       PlayerJoined: await contract.queryFilter('PlayerJoined', fromBlock, toBlock),
@@ -133,7 +129,6 @@ export class IndexerService implements OnModuleInit {
       NicknameSet: await contract.queryFilter('NicknameSet', fromBlock, toBlock),
     };
 
-    // Process events in chronological order
     const allEvents = [
       ...events.RoomCreated.map(e => ({ type: 'RoomCreated', event: e })),
       ...events.PlayerJoined.map(e => ({ type: 'PlayerJoined', event: e })),
@@ -185,7 +180,6 @@ export class IndexerService implements OnModuleInit {
     const txHash = event.transactionHash;
     const blockNumber = event.blockNumber;
 
-    // Check if already indexed (idempotency)
     const existing = await this.roomRepository.findOne({
       where: { chainRoomId: roomId.toString() },
     });
@@ -206,8 +200,6 @@ export class IndexerService implements OnModuleInit {
 
     await this.roomRepository.save(room);
     this.logger.log(`Room ${roomId} created`);
-
-    // Emit WebSocket event
     this.eventGateway.emitRoomCreated(room);
   }
 
@@ -215,7 +207,6 @@ export class IndexerService implements OnModuleInit {
     const { roomId, player, character, nickname, currentPlayers, timestamp } = event.args;
     const txHash = event.transactionHash;
 
-    // Find room
     const room = await this.roomRepository.findOne({
       where: { chainRoomId: roomId.toString() },
     });
@@ -225,10 +216,8 @@ export class IndexerService implements OnModuleInit {
       return;
     }
 
-    // Ensure user exists
     await this.ensureUserExists(player);
 
-    // Check if player already added (idempotency)
     const existingPlayer = await this.playerRepository.findOne({
       where: {
         roomId: room.id,
@@ -240,7 +229,6 @@ export class IndexerService implements OnModuleInit {
       return;
     }
 
-    // Add player
     const playerEntity = this.playerRepository.create({
       roomId: room.id,
       userAddress: player.toLowerCase(),
@@ -252,7 +240,6 @@ export class IndexerService implements OnModuleInit {
 
     await this.playerRepository.save(playerEntity);
 
-    // Create bet record
     const bet = this.betRepository.create({
       roomId: room.id,
       userAddress: player.toLowerCase(),
@@ -265,17 +252,13 @@ export class IndexerService implements OnModuleInit {
 
     await this.betRepository.save(bet);
 
-    // Update room
     room.currentPlayers = Number(currentPlayers);
     room.totalPot = (BigInt(room.totalPot) + BigInt(room.betAmount)).toString();
     await this.roomRepository.save(room);
 
-    // Update user stats
     await this.updateUserStats(player.toLowerCase());
 
     this.logger.log(`Player ${player} joined room ${roomId}`);
-
-    // Emit WebSocket event
     this.eventGateway.emitPlayerJoined(room.chainRoomId, playerEntity);
   }
 
@@ -332,13 +315,11 @@ export class IndexerService implements OnModuleInit {
     room.completedAt = new Date(Number(timestamp) * 1000);
     await this.roomRepository.save(room);
 
-    // Mark winner in players
     await this.playerRepository.update(
       { roomId: room.id, userAddress: winner.toLowerCase() },
       { isWinner: true },
     );
 
-    // Update user stats
     await this.updateUserStats(winner.toLowerCase(), true);
 
     this.logger.log(`Game completed for room ${roomId}, winner: ${winner}`);

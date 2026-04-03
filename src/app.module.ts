@@ -15,24 +15,20 @@ import { HealthController } from './health.controller';
 
 @Module({
   imports: [
-    // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, blockchainConfig, indexerConfig],
       envFilePath: ['.env.local', '.env'],
     }),
 
-    // Database
     TypeOrmModule.forRoot(dataSourceOptions),
 
-    // Caching
     CacheModule.register({
       isGlobal: true,
       ttl: parseInt(process.env.API_CACHE_TTL || '30', 10) * 1000,
       max: 100,
     }),
 
-    // Rate Limiting
     ThrottlerModule.forRoot([
       {
         ttl: parseInt(process.env.API_RATE_LIMIT_TTL || '60', 10) * 1000,
@@ -40,10 +36,8 @@ import { HealthController } from './health.controller';
       },
     ]),
 
-    // Scheduling (for indexer cron jobs)
     ScheduleModule.forRoot(),
 
-    // Feature Modules
     BlockchainModule,
     GameModule,
     EventsModule,

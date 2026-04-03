@@ -30,10 +30,10 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port, process.env.HOST || '0.0.0.0');
 
-  logger.log(`🎡 Spin The Wheel Backend is running on port ${port}`);
-  logger.log(`📡 WebSocket server is ready at /events namespace`);
-  logger.log(`🔗 Blockchain: Chain ID ${process.env.CHAIN_ID}`);
-  logger.log(`📝 Contract: ${process.env.CONTRACT_ADDRESS}`);
+  logger.log(`Spin The Wheel backend running on port ${port}`);
+  logger.log(`WebSocket server ready at /events`);
+  logger.log(`Blockchain: Chain ID ${process.env.CHAIN_ID}`);
+  logger.log(`Contract: ${process.env.CONTRACT_ADDRESS}`);
 }
 
 bootstrap();

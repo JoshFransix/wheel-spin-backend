@@ -28,10 +28,8 @@ export class ContractService implements OnModuleInit {
       throw new Error('RPC_URL is not configured');
     }
 
-    // Initialize HTTP provider for read operations
     this.provider = new JsonRpcProvider(rpcUrl);
 
-    // Initialize WebSocket provider for event listening with auto-reconnect
     if (wsUrl) {
       this.wsProvider = new WebSocketProvider(wsUrl);
       this.setupWebSocketReconnection();
