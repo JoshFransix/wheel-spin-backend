@@ -1,14 +1,13 @@
 # Spin The Wheel - Backend
 
-Production-ready Web3 backend for the Spin The Wheel multiplayer gambling game built with NestJS, PostgreSQL, WebSockets, and Ethers.js.
+Web3 backend for the Spin The Wheel multiplayer gambling game built with NestJS, PostgreSQL, WebSockets, and Ethers.js.
 
-## 🏗️ Architecture Overview
+## Architecture
 
 ### Core Principles
 - **Read-Only**: Backend never mutates game logic or outcomes
 - **Blockchain as Source of Truth**: All authoritative state comes from the smart contract
 - **Event-Driven**: Indexes on-chain events and provides real-time updates
-- **Scalable**: Designed for high-traffic production environments
 
 ### Tech Stack
 - **Framework**: NestJS (Node.js/TypeScript)
@@ -18,7 +17,7 @@ Production-ready Web3 backend for the Spin The Wheel multiplayer gambling game b
 - **Caching**: In-memory cache (expandable to Redis)
 - **Contract**: Chainlink VRF v2.5 on Sepolia
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -64,7 +63,7 @@ src/
 
 ```
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Users Table
 ```sql
@@ -144,7 +143,7 @@ src/
 - createdAt, updatedAt
 ```
 
-## 🔌 REST API Endpoints
+## REST API
 
 ### Base URL: `/api/v1`
 
@@ -222,7 +221,7 @@ src/
 **GET** `/health`
 - Returns: Server and blockchain connection status
 
-## 🔄 WebSocket Events
+## WebSocket Events
 
 ### Namespace: `/events`
 
@@ -303,7 +302,7 @@ src/
 }
 ```
 
-## 🔐 Environment Configuration
+## Environment Variables
 
 ### Local Development (`.env`)
 ```env
@@ -354,7 +353,7 @@ WS_CORS_ORIGIN=http://localhost:3000
 - Enable API rate limiting per IP
 - Set up logging (Sentry, DataDog, CloudWatch)
 
-## 🚀 Deployment
+## Deployment
 
 ### Prerequisites
 ```bash
@@ -401,7 +400,7 @@ COPY dist ./dist
 CMD ["node", "dist/main"]
 ```
 
-## 🔍 Monitoring & Observability
+## Monitoring
 
 ### Health Checks
 - **Endpoint**: `GET /health`
@@ -422,7 +421,7 @@ CMD ["node", "dist/main"]
 - **Logs**: CloudWatch, Elasticsearch
 - **Metrics**: Prometheus + Grafana
 
-## ⚡ Performance Optimization
+## Performance
 
 ### Caching Strategy
 - Room list: 30s TTL
@@ -443,7 +442,7 @@ CMD ["node", "dist/main"]
 - Room-based subscriptions
 - Event batching for lobby updates
 
-## 🛡️ Security Considerations
+## Security
 
 1. **Read-Only Operations**: Backend never sends transactions
 2. **Input Validation**: All API inputs validated with class-validator
@@ -453,7 +452,7 @@ CMD ["node", "dist/main"]
 6. **Data Integrity**: Blockchain events are source of truth
 7. **Idempotency**: Events processed once (checked by transaction hash)
 
-## 📊 Indexing Strategy
+## Indexing
 
 ### Event Processing
 1. **Historical Sync**: Batches of 1000 blocks
@@ -470,7 +469,7 @@ CMD ["node", "dist/main"]
 - `GameCompleted`
 - `NicknameSet`
 
-## 🧪 Testing
+## Testing
 ```bash
 # Unit tests
 npm test
@@ -482,7 +481,7 @@ npm run test:e2e
 npm run test:cov
 ```
 
-## 📝 API Response Standards
+## API Responses
 
 ### Success Response
 ```json
@@ -501,7 +500,7 @@ npm run test:cov
 }
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Indexer Not Starting
 - Check `INDEXER_ENABLED=true`
@@ -518,17 +517,15 @@ npm run test:cov
 - Check credentials in `.env`
 - Ensure database exists
 
-## 📚 Additional Resources
+## Resources
 
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [Ethers.js Documentation](https://docs.ethers.org/v6/)
 - [TypeORM Documentation](https://typeorm.io/)
 - [Socket.IO Documentation](https://socket.io/docs/v4/)
 
-## 📄 License
+## License
 
 MIT
 
----
 
-**Built for production | Event-driven | Read-only | Blockchain-first**
